@@ -1,0 +1,31 @@
+Package: hypML
+Title: HypML - Machine Learning-Based Hypothesis Testing for Time Series 
+Version: 0.1.1
+Authors@R: 
+ as.person(c(
+    "Gary Cornwall <gary.cornwall@bea.gov> [aut, cre]",
+    "Jeffrey Chen <contact@jeffchen.org> [aut]"
+  ))
+Description: Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots.
+License: `use_mit_license()`
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends:
+	tseries,
+	fUnitRoots,
+	egcm,
+	urca,
+	foreach,
+	forecast,
+	doParallel,
+	plyr,
+	dplyr,
+	tidyverse,
+	caret,
+	ranger,
+	xgboost,
+	pROC, 
+	ggplot2,
+	fracdiff

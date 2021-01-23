@@ -1,0 +1,110 @@
+---
+title: "Constructing a custom unit root test"
+author: "Jeff Chen"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Testing for a unit root with hypML}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+In this vignette, we illustrate how to apply the pre-trained hypML unit root test to a set of time series.
+
+## Set up
+
+Set up requires installation from the Github page
+```{r, message=FALSE, warning=FALSE}
+#Load package
+  #devtools::
+  library(hypML)
+```
+
+
+
+```{r}
+#Set splits
+  N <- 3000 
+  splits <- c(0.5,0.3, 0.2)
+  train_index <- 1:round(N*splits[1])
+  val_index <- (round(N*splits[1])+1):round(N * sum(splits[1:2]))
+  test_index <- round(N * sum(splits[1:2]) + 1):N
+```
+
+Define
+
+```{r}
+#Set DGP parameters if Single scenario
+  dgp_params <- list(list(dgp = "dgp_enders3", sd = 1, gamma = 1),
+                     list(dgp = "dgp_enders2", sd = 1, alpha0 = 1,  gamma = 1),
+                     list(dgp = "dgp_enders1",  sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
+```
+
+Generate
+
+```{r}
+#Simulate train and test time series
+  ts_data <- gen_bank(iter = N,
+                       sample_prob = .50,
+                       t = c(5,50),
+                       freq = 12,
+                       nur_ur = c(0.90000,.99999),
+                       run_par = TRUE,
+                       dgp_params = dgp_params) 
+  save(ts_data, file = "0_ts_series.Rda")
+```
+
+Create input features 
+```{r}
+#Construct feature set for each set
+  train_feat <- gen_features(ts_data[train_index])
+  val_feat <- gen_features(ts_data[val_index])
+  test_feat <- gen_features(ts_data[test_index])
+
+#Save out (change the directory!)
+  save(train_feat, test_feat, val_feat, file = "1_ts_features.Rda")
+```
+
+Train models for test
+```{r}
+
+#Set algorithm parameters
+  model_params <- list(list(method = "ranger",
+                            cv_folds = 5,
+                            tune_grid = expand.grid(mtry = c(3, 9, 27),
+                                                    splitrule = "gini",
+                                                    min.node.size = c(2, 4, 16))),
+                       list(method = "xgbTree",
+                            cv_folds = 5,
+                            tune_grid = expand.grid(nrounds = 300,
+                                                    eta = c(0.01, 0.03, 0.1, 0.3, 0.5),
+                                                    gamma = 0,
+                                                    colsample_bytree = c(0.8, 1),
+                                                    min_child_weight = 1,
+                                                    subsample = c(0.8, 1),
+                                                    max_depth = c(4, 6))))
+  
+#Train model
+  custom_set <- gen_test(train_set = train_feat, 
+                        val_set = val_feat,
+                        model_params = model_params)
+  
+  save(custom_set, file = "custom_set.Rda")
+```
+
+Apply custom ML Test to new time series object
+```{r}
+#List of time series 
+  x <- list(norm1 = ts(rnorm(120, 10,10), freq=12),
+            with_trend = ts(rnorm(120, 10,10) + 1:120, freq=12))
+            
+#ML test
+  out <- ml_test_all(bank = x, 
+                     costratio = 5,
+                     original = FALSE,
+                     custom_model = custom_set) 
+   
+```
+
+For more in-depth background on the construction and properties of the ML-based unit root test, read Cornwall, Chen, and Sauley (2021).
