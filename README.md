@@ -1,11 +1,11 @@
 # Machine Learning-Based Hypothesis Testing for Time Series  (hypML)
 
-Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This `R` package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots. 
-
-This package is built to test three core unit root DGPs using the ML algorithm from Cornwall, Chen, and Sauley (2021):
+Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This `R` package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots (subsequent versions for Stata and Python will be developed in due course).  This package is built to test three core unit root DGPs using the ML algorithm from Cornwall, Chen, and Sauley (2021):
 
 ![equation](https://latex.codecogs.com/gif.latex?y_t&space;=&space;\lambda&space;&plus;&space;\phi&space;y_{t-1}&space;&plus;&space;\delta&space;t&space;&plus;&space;\epsilon_t)
+
 ![equation](https://latex.codecogs.com/gif.latex?y_t&space;=&space;\lambda&space;&plus;&space;\phi&space;y_{t-1}&space;&plus;&space;\epsilon_t)
+
 ![equation](https://latex.codecogs.com/gif.latex?y_t&space;=&space;\phi&space;y_{t-1}&space;&plus;&space;\epsilon_t)
 
 In addition, the `R` package also has the capability of training custom ML-based unit root tests.
@@ -38,13 +38,15 @@ To illustrate the test in practice, we will need some test data. We simulate fiv
                             autoplot(out[[5]]), ncol = 2)
 ```
 
-To screen these time series, apply the `ml_test_all` function, which expects a list object containing time series objects (`bank =`) and a `costratio` to identify the optimal decision threshold given the preferred weight between Type I and II errors. In this case, we assume a `costratio = 0.2`.
+To screen these time series, apply the `ml_test_all` function using an efficient pre-trained gradient boosting algorithm. The function expects a list object containing time series objects (`bank =`) and a `costratio` to identify the optimal decision threshold given the preferred weight between Type I and II errors.   In this case, we assume a `costratio = 0.2`.
+
 
 ```
-  res <- ml_test_all(bank = out,  costratio = 0.2)
+  res <- ml_test_all(bank = out,  
+  			      costratio = 0.2)
 ```
 
-The `res` object captures the outputs of a battery of tests, including pre-trained ML-based unit root tests. The first element summarizes the verdict that each unit root test reached when evaluating each time series ("yes" = "unit root"). While each of the traditional tests may disagree, it is worth noting that the tests built on Random Forest (`verdict.ranger`) and Gradient Boosting (`verdict.xgbTree`) offer markedly improved diagnostic accuracy.
+The `res` object captures the outputs of a battery of tests, including pre-trained ML-based unit root tests. The first element summarizes the verdict that each unit root test reached when evaluating each time series (e.g. unit root versus stationary). While each of the traditional tests may disagree, it is worth noting that the tests built on Random Forest (`verdict.ranger`) and Gradient Boosting (`verdict.xgbTree`) offer markedly improved diagnostic accuracy.
 
 ```
   verdicts <- res$verdicts
@@ -65,6 +67,21 @@ Lastly, all the input features for the ML-based tests that were calculated from 
   feats[,1:4]
 ```
 
-For more in-depth background on the construction and properties of the ML-based unit root test, read Cornwall, Chen, and Sauley (2021).
+## Custom tests
+
+It is possible to also create and use your own custom ML tests (see included vignettes). We have made available a [ testing package (1gb)](https://www.dropbox.com/s/eu3tjmasdd6zln6/sysdata_full.Rda?dl=0) that include both a gradient boost-based test and random forest-based test. Note that in Cornwall, Chen, and Sauley (2021), these two different ensemble-based tests yield nearly identical performance.
+
+```
+  res <- ml_test_all(bank = out,  
+  			     original = FALSE,	
+			     custom_model = base_models, 
+			     costratio = 0.2)
+```
+
+
+
+## Got questions?
+
+Reach out to Gary Cornwall (gary.cornwall@bea.gov) and Jeff Chen (contact@jeffchen.org).
 
 
