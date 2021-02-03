@@ -41,7 +41,7 @@ Define
                      list(dgp = "dgp_enders1",  sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
 ```
 
-Generate
+Generate time series
 
 ```{r}
 #Simulate train and test time series

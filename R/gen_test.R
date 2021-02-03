@@ -4,7 +4,7 @@
 #' @param train_set A training set outputted from gen_features function
 #' @param use_case A string indicating if cross validation should be applied ('cv') or full sample should be used to train ('full'). If 'cv' is specified, then cv_folds should be specified in the model_params argument.
 #' @param val_set A validation set outputted from gen_features function to be used to calibrate threshold
-#' @param costratios A vector of cost ratios. This will be used to identify optimal decision threshold that satisfies the preference Type I relative to Type II.  (Default = seq(0.1, 10, 0.1))
+#' @param costratios A vector of cost ratios. This will be used to identify optimal decision threshold that satisfies the preference Type I error relative to Type II error.  (Default = seq(0.1, 10, 0.1))
 #' @param model_params A list of parameters for specifying models. Multiple methods allowed. Requires a 'method' tag to specify algorithm, 'cv_folds' to indicate number of folds for cross validation, then data frame of hyperparameters for inclusion in tune_grid.
 #' @return A list object
 #' @author Gary Cornwall and Jeffrey Chen
@@ -50,13 +50,18 @@ gen_test <- function(train_set,
     }
 
 
+  #Set base levels
+    train_feat$ur_flag <- relevel(train_feat$ur_flag, ref = "nur")
+    val_feat$ur_flag <- relevel(val_feat$ur_flag, ref = "nur")
+
+
   #Train classifiers
     for(iter in 1:mod_index){
       #Message
       message(paste("Training", model_params[[iter]]$method))
 
       #Train model
-      mod <- caret::train(factor(ur_flag) ~ .,
+      mod <- caret::train(ur_flag ~ .,
                    data = train_set[,-c(1:3)],
                    method = model_params[[iter]]$method,
                    trControl = trainControl(method = use_case,

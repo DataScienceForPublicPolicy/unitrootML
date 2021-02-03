@@ -1,7 +1,7 @@
 #' Apply ML-based hypothesis test to a bank of time series
 #'
 #' @param bank List object with at least one time series
-#' @param costratio A numeric cost ratio (Default = 1)
+#' @param costratio A numeric cost ratio is e1/e2. Note that in the article, this is e2/e1. (Default = 1)
 #' @param original Boolean indicating whether to use default model or a custom model. The default model is a gradient boost model with a sensitivity rated at 0.924 and specificity rated at 0.952. (Default = TRUE)
 #' @param custom_model A hypML model object with a custom-trained model. Note that a custom model is used only when original is set to TRUE and a hypML model object is supplied. (Default = NULL)
 #' @param run_par  Boolean indicating whether to compute in parallel (Default = TRUE).
@@ -10,7 +10,7 @@
 #' @param verdicts Integer indicating whether to (1) report only ML model verdicts, (2) both ML and test statistic verdicts based on thresholds calibrated from selected cost ratio. (Default = 1)
 #' @return A HypML object containing test results
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples ml_test_all(list(ts(rnorm(120, 10,10), freq=12)), costratio = 1)
+#' @examples ml_test_all(list(ts(rnorm(120, 10,10), freq=12)), costratio = (10/7))
 #' @export
 #'
 
