@@ -1,6 +1,6 @@
 # Machine Learning-Based Hypothesis Testing for Time Series  (hypML)
 
-Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This `R` package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots (subsequent versions for Stata and Python will be developed in due course).  This package is built to test three core unit root DGPs using the ML algorithm from ![Cornwall, Chen, and Sauley (2021)](https://arxiv.org/abs/2103.01368):
+Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This `R` package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots (subsequent versions for Stata and Python will be developed in due course).  This package is built to test three core unit root DGPs using the ML algorithm from [Cornwall, Chen, and Sauley (2021)](https://arxiv.org/abs/2103.01368):
 
 ![equation](https://latex.codecogs.com/gif.latex?y_t&space;=&space;\lambda&space;&plus;&space;\phi&space;y_{t-1}&space;&plus;&space;\delta&space;t&space;&plus;&space;\epsilon_t)
 
