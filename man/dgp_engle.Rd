@@ -33,10 +33,12 @@ A data frame
 Returns a vector of
 }
 \examples{
-dgp_engle(periods = 100, sd = 1, gamma = 1, theta = .5, alpha0 = 1, alpha1 = .5)
-}
-\references{
-
+dgp_engle(periods = 100,
+          sd = 1,
+          gamma = 1,
+          theta = .5,
+          alpha0 = 1,
+          alpha1 = .5)
 }
 \author{
 Gary Cornwall and Jeffrey Chen

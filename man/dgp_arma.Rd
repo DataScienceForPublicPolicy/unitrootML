@@ -22,7 +22,10 @@ A data frame
 Returns a time series vector
 }
 \examples{
-dgp_arma(periods = 100, sd = 1, gamma = 1, theta = -.25)
+dgp_arma(periods = 100,
+         sd = 1,
+         gamma = 1,
+         theta = -.25)
 }
 \author{
 Gary Cornwall and Jeffrey Chen

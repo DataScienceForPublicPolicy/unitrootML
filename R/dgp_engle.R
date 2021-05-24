@@ -9,8 +9,13 @@
 #' @param alpha1 Alpha1
 #' @return A data frame
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples dgp_engle(periods = 100, sd = 1, gamma = 1, theta = .5, alpha0 = 1, alpha1 = .5)
-#' @references
+#' @examples
+#' dgp_engle(periods = 100,
+#'           sd = 1,
+#'           gamma = 1,
+#'           theta = .5,
+#'           alpha0 = 1,
+#'           alpha1 = .5)
 #' @export
 #'
 #'
@@ -20,10 +25,9 @@ dgp_engle <- function(periods = 100, sd = 1, gamma = 1, theta = .5, alpha0 = 1, 
 
   data <- rep(0,periods)
   p2 <- 2*periods
-  et <- rep(0,p2)
-  et[1] <- rnorm(1) * sqrt(alpha0)
   for (i in 2:p2) {
-    data[i] <-  runif(1,-100,100) + gamma*data[i-1] + rnorm(1)*sqrt(alpha0 + alpha1*et[i-1])
+    data[i] <-  gamma*data[i-1] + rnorm(1)*sqrt(alpha0 + alpha1*abs(data[i-1]))
   }
   data <- data[(periods + 1):p2]
+  return(data)
 }

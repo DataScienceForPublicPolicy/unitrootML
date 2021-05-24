@@ -7,7 +7,11 @@
 #' @param theta Theta
 #' @return A data frame
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples dgp_arma(periods = 100, sd = 1, gamma = 1, theta = -.25)
+#' @examples
+#' dgp_arma(periods = 100,
+#'          sd = 1,
+#'          gamma = 1,
+#'          theta = -.25)
 #' @export
 #'
 #'

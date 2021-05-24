@@ -10,7 +10,15 @@
 #' @param dgp_params A list object indicating which DGPs will be used and in what proportion within the sample_prob (see DGP functions). The basic DGP should include a tag "dgp" with a string value indicating which dgp function (e.g. "dgp_enders1", "dgp_engle") and the arguments required to execute the function. The parameters "period" will be handled by "t" and "gamma" is a function of the "sample_prob" parameter.  Note that this function that DGPs will be evenly split amongst the sample_prob. For example, if sample_prob = 0.5 and two DGPs are specified, 25% of the overall sample will be generated using each DGP.
 #' @return A list object
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples gen_bank(iter = 300, dgp_params = list(dgp = "dgp_enders1", periods = 100, sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
+#' @examples
+#' #Generate a new time series
+#' gen_bank(iter = 300,
+#'         dgp_params = list(dgp = "dgp_enders1",
+#'                           periods = 100,
+#'                           sd = 1,
+#'                           alpha0 = 1,
+#'                           alpha2 =  .005,
+#'                           gamma = 1))
 #' @export
 #'
 #'

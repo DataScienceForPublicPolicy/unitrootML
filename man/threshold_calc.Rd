@@ -4,21 +4,23 @@
 \alias{threshold_calc}
 \title{Calculate threshold given cost ratios}
 \usage{
-threshold_calc(roc_obj, costratio)
+threshold_calc(roc_obj, pvalue = 0.05)
 }
 \arguments{
-\item{roc_obj}{A training set outputted from gen_features function}
+\item{roc_obj}{A training set outputted from the gen_features function}
 
-\item{costratios}{A validation set outputted from gen_features function to be used to calibrate threshold}
+\item{pvalue}{A desired level of type I errors, default is 0.05. To get the best accuracy, enter "-9999".}
 }
 \value{
 A list object
 }
 \description{
-Returns a list of model objects with accuracies and ROC coordinates based on test set
+Returns a list of model objects with accuracies and ROC coordinates based on test set. This is a support function that is not intended for the end user to directly use.
 }
 \examples{
-threshold_calc(roc_obj, costratio)
+\dontrun{
+threshold_calc(roc_obj, pvalue)
+}
 }
 \author{
 Gary Cornwall and Jeffrey Chen

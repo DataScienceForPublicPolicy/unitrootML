@@ -4,18 +4,54 @@
 #' @param train_set A training set outputted from gen_features function
 #' @param use_case A string indicating if cross validation should be applied ('cv') or full sample should be used to train ('full'). If 'cv' is specified, then cv_folds should be specified in the model_params argument.
 #' @param val_set A validation set outputted from gen_features function to be used to calibrate threshold
-#' @param costratios A vector of cost ratios. This will be used to identify optimal decision threshold that satisfies the preference Type I error relative to Type II error.  (Default = seq(0.1, 10, 0.1))
+#' @param pvalues A vector of alpha or p-values. This will be used to identify optimal decision threshold .  (Default = c(0.0001, 0.001, 0.01, 0.05, 0.1))
 #' @param model_params A list of parameters for specifying models. Multiple methods allowed. Requires a 'method' tag to specify algorithm, 'cv_folds' to indicate number of folds for cross validation, then data frame of hyperparameters for inclusion in tune_grid.
 #' @return A list object
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples gen_test(train_set, val_set, model_params)
+#' @examples
+#' \dontrun{
+#' #Set splits
+#'N <- 3000
+#'train_index <- 1:2000
+#'val_index <- 2001:N
+#'
+#'#Set DGP parameters if Single scenario
+#'dgp_params <- list(list(dgp = "dgp_enders3", sd = 1, gamma = 1),
+#'                   list(dgp = "dgp_enders2", sd = 1, alpha0 = 1,  gamma = 1),
+#'                   list(dgp = "dgp_enders1",  sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
+#'
+#'#Simulate train and test time series
+#'ts_data <- gen_bank(iter = N,
+#'                    sample_prob = .50,
+#'                    t = c(5,50),
+#'                    freq = 12,
+#'                    nur_ur = c(0.90000,.99999),
+#'                    run_par = TRUE,
+#'                    dgp_params = dgp_params)
+#'
+#'#Construct feature set for each set
+#'train_feat <- gen_features(ts_data[train_index])
+#'val_feat <- gen_features(ts_data[val_index])
+#'
+#'#Set algorithm parameters -- five-fold cross validation
+#'model_params <- list(list(method = "ranger",
+#'                          cv_folds = 5,
+#'                          tune_grid = expand.grid(mtry = c(3, 9, 27),
+#'                                                  splitrule = "gini",
+#'                                                  min.node.size = c(2, 4, 16))))
+#'
+#' #Train model
+#' custom_set <- gen_test(train_set = train_feat,
+#'                       val_set = val_feat,
+#'                        model_params = model_params)
+#' }
 #' @export
 #'
 
 gen_test <- function(train_set,
                      val_set,
                      use_case = "cv",
-                     costratios = seq(0.1, 10, 0.1),
+                     pvalues = c(0.0001, 0.001, 0.01, 0.05, 0.1),
                      model_params = list(list(method = "ranger",
                                               cv_folds = 5,
                                               tune_grid = expand.grid(mtry = c(3, 9, 27),
@@ -69,15 +105,22 @@ gen_test <- function(train_set,
                                             classProbs = TRUE),
                    tuneGrid = model_params[[iter]]$tune_grid)
 
-      #Obtain test performance
-        yhat <- caret::predict.train(mod, val_set, type = "prob")[,2]
+      #Obtain test performance by pulling prediction for chance of UR
+        yhat <- caret::predict.train(mod, val_set, type = "prob")[,1]
+
+      #Calculate ROC object
         roc_obj <- pROC::roc(1 * (val_set$ur_flag == "ur") ~ yhat)
 
-        #Calculate decision threshold for different cost ratios
+      #Calculate decision threshold for different p-values
         precomp_thresh <- data.frame()
-        for(i in costratios){
-          precomp_thresh <- rbind(precomp_thresh, threshold_calc(roc_obj, i))
+        for(i in pvalues){
+          precomp_thresh <- rbind(precomp_thresh,
+                                  threshold_calc(roc_obj, i))
         }
+
+      #Retrieve best case
+        precomp_thresh <- rbind(precomp_thresh,
+                                threshold_calc(roc_obj, -9999)[1,])
 
         conf_mat <- table(val_set$ur_flag, caret::predict.train(mod, val_set))
         acc <- (conf_mat[1,1] + conf_mat[2,2]) / nrow(val_set)
@@ -106,9 +149,16 @@ gen_test <- function(train_set,
 
       #Set up precomputed thresholds
       precomp_thresh <- data.frame()
-      for(i in costratios){
-        precomp_thresh <- rbind(precomp_thresh, threshold_calc(roc_obj, i))
+
+      #Loop through each
+      for(i in pvalues){
+        precomp_thresh <- rbind(precomp_thresh,
+                                threshold_calc(roc_obj, i))
       }
+
+      #Retrieve best case
+      precomp_thresh <- rbind(precomp_thresh,
+                              threshold_calc(roc_obj, -9999)[1,])
 
       hypmod[[iter]] <- list(method_name = iter,
                              type = "test statistic",

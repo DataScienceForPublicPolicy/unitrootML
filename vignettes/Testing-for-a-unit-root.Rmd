@@ -38,14 +38,14 @@ For this example, we will simulate five time series: two with a unit root (`gamm
                             autoplot(out[[5]]), ncol = 2)
 ```
 
-To screen these time series, apply the `ml_test_all` function, which expects a list object containing time series objects (`bank =`) and a `costratio` to identify the optimal decision threshold given the preferred weight between Type I and II errors. In this case, we assume a `costratio = 2`.
+To screen these time series, apply the `ml_test_all` function, which expects a list object containing time series objects (`bank =`) and a`pvalue = 0.05` to return results evaluated at a 5% level.
 
 ```{r}
-  res <- ml_test_all(bank = out, 
-                     costratio = 2)
+  res <- ml_test(bank = out, 
+                 pvalue = 0.05)
 ```
 
-The `res` object captures the outputs of a battery of tests, including pre-trained ML-based unit root tests. The first element summarizes the verdict that each unit root test reached when evaluating each time series ("yes" = "unit root"). While each of the traditional tests may disagree, it is worth noting that the tests built on Random Forest (`verdict.ranger`) and Gradient Boosting (`verdict.xgbTree`) offer markedly improved diagnostic accuracy.
+The `res` object captures the outputs of a battery of tests, including pre-trained ML-based unit root tests. The first element summarizes the verdict that each unit root test reached when evaluating each time series ("yes" = "unit root"). While each of the traditional tests may disagree, it is worth noting that the tests built on Random Forest (`verdict_ranger`) and Gradient Boosting (`verdict_xgbTree`) offer markedly improved diagnostic accuracy.
 
 ```{r}
   verdicts <- res$verdicts

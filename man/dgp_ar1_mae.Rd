@@ -22,7 +22,10 @@ A data frame
 Returns a vector of time series values
 }
 \examples{
-dgp_ar1_mae(periods = 100, sd = 1, gamma = 1, theta = .5)
+dgp_ar1_mae(periods = 100,
+            sd = 1,
+            gamma = 1,
+            theta = .5)
 }
 \author{
 Gary Cornwall and Jeffrey Chen

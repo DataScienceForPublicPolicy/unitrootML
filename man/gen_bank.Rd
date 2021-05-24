@@ -37,7 +37,14 @@ A list object
 Returns a list object of time series objects with their attributes. Whether a time series has a unit root is drawn at random based on a sampling probability (sample_prob). The length of the series is randomly drawn between t_min and t_max. The type of unit root process follows standard DGPs which can be calibrated and the split of each DGP can be controlled.
 }
 \examples{
-gen_bank(iter = 300, dgp_params = list(dgp = "dgp_enders1", periods = 100, sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
+#Generate a new time series
+gen_bank(iter = 300,
+        dgp_params = list(dgp = "dgp_enders1",
+                          periods = 100,
+                          sd = 1,
+                          alpha0 = 1,
+                          alpha2 =  .005,
+                          gamma = 1))
 }
 \author{
 Gary Cornwall and Jeffrey Chen

@@ -1,6 +1,6 @@
 Package: hypML
 Title: HypML - Machine Learning-Based Hypothesis Testing for Time Series 
-Version: 0.1.1
+Version: 0.2.1
 Authors@R: 
  as.person(c(
     "Gary Cornwall <gary.cornwall@bea.gov> [aut, cre]",

@@ -7,7 +7,11 @@
 #' @return A data frame
 #' @author Gary Cornwall and Jeffrey Chen
 #' @references Enders, Walter. 2008 Applied econometric time series. New York: Wiley.
-#' @examples dgp_enders3(periods = 200, sd = 1, gamma = 1)
+#' @examples
+#'
+#' dgp_enders3(periods = 200,
+#'             sd = 1,
+#'            gamma = 1)
 #' @export
 #'
 #'

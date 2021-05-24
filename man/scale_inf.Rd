@@ -17,7 +17,7 @@ scale_inf(x, a = 1.51, b = 5.993)
 Scaled values
 }
 \description{
-Scaling from (0 to infinity) to (0 to 1)
+Scaling from (0 to infinity) to (0 to 1). This is a support function that is not intended for the end user to directly use.
 }
 \examples{
 scale_inf(ts(rnorm(120, 10,10), frequency=12))

@@ -13,10 +13,11 @@ ts_measures(x)
 A vector of time series characteristics
 }
 \description{
-Test for seasonality in a time series based on lags
+Test for seasonality in a time series based on lags.
 }
 \examples{
-ts_measures(ts(rnorm(120, 10,10), freq=12))
+ts_measures(ts(rnorm(120, 10,10),
+               freq=12))
 }
 \references{
 https://robjhyndman.com/hyndsight/tscharacteristics/

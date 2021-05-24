@@ -1,6 +1,6 @@
 #' Scale a series from (0 to infinity) to (0 to 1)
 #'
-#' Scaling from (0 to infinity) to (0 to 1)
+#' Scaling from (0 to infinity) to (0 to 1). This is a support function that is not intended for the end user to directly use.
 #' @param x A time series object
 #' @param a param a
 #' @param b param b

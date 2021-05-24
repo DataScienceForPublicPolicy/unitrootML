@@ -25,7 +25,16 @@ Returns a data frame of unit root tests and time series features
 Returns a set of commonly used time series statistical tests and time series features.
 }
 \examples{
-gen_features(bank)
+#Create simulated time series using Enders 1
+new_series <- gen_bank(iter = 300,
+                       dgp_params = list(dgp = "dgp_enders1",
+                                         periods = 100,
+                                         sd = 1,
+                                         alpha0 = 1,
+                                         alpha2 =  .005,
+                                         gamma = 1))
+#Generate features
+feat <- gen_features(bank = new_series)
 }
 \author{
 Gary Cornwall and Jeffrey Chen

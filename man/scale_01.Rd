@@ -17,10 +17,11 @@ scale_01(x, a, b)
 Scaled values
 }
 \description{
-Scaling to 0/1 from 0/1
+Scaling to 0/1 from 0/1. This is a support function that is not intended for the end user to directly use.
 }
 \examples{
-scale_01(ts(rnorm(120, 10,10), frequency=12))
+scale_01(ts(rnorm(120, 10,10),
+           frequency=12))
 }
 \references{
 https://robjhyndman.com/hyndsight/tscharacteristics/

@@ -1,7 +1,7 @@
 #' Apply ML-based hypothesis test to a bank of time series
 #'
 #' @param bank List object with at least one time series
-#' @param costratio A numeric cost ratio is e1/e2. Note that in the article, this is e2/e1. (Default = 1)
+#' @param pvalue A numeric value indicating the desired p-value. (Default = 0.05) To retrieve the best accuracy, enter "-9999".
 #' @param original Boolean indicating whether to use default model or a custom model. The default model is a gradient boost model with a sensitivity rated at 0.924 and specificity rated at 0.952. (Default = TRUE)
 #' @param custom_model A hypML model object with a custom-trained model. Note that a custom model is used only when original is set to TRUE and a hypML model object is supplied. (Default = NULL)
 #' @param run_par  Boolean indicating whether to compute in parallel (Default = TRUE).
@@ -10,14 +10,12 @@
 #' @param verdicts Integer indicating whether to (1) report only ML model verdicts, (2) both ML and test statistic verdicts based on thresholds calibrated from selected cost ratio. (Default = 1)
 #' @return A HypML object containing test results
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples ml_test_all(list(ts(rnorm(120, 10,10), freq=12)), costratio = (10/7))
+#' @examples ml_test(list(ts(rnorm(120, 10,10), freq=12)), pvalue = 0.05)
 #' @export
 #'
 
-#Suppress test stats verdicts
-
-ml_test_all <- function(bank,
-                        costratio = 1,
+ml_test <- function(bank,
+                        pvalue = 0.05,
                         custom_model,
                         original = TRUE,
                         verdicts = 1,
@@ -29,12 +27,13 @@ ml_test_all <- function(bank,
     if(fanfare){
       message("\n ML-BASED HYPOTHESIS TESTING FOR UNIT ROOTS \n \t \n------------------------ \n")
       message(paste0("Using ", ifelse(original, "base models", "custom model"),"."))
-      message(paste0("Cost ratio to be tested is  ", costratio, "."))
+      message(paste0("P-value to be tested is  ", pvalue, "."))
       message("What is the verdict?")
     }
 
   #Determine which model to use
     if(original){
+      #load("R/sysdata.Rda")
       test_model <- base_models
     } else {
       test_model <- custom_model
@@ -59,8 +58,9 @@ ml_test_all <- function(bank,
     scores <- foreach::foreach(i = 1:length(bank)) %dopar% {
 
       #Construct payload
-      data.frame(id = i,
+      temp <- data.frame(id = i,
                  ts_features(bank[[i]]))
+      return(temp)
     }
 
   #Create data frame
@@ -69,6 +69,7 @@ ml_test_all <- function(bank,
   #Scoring
     #Create place holder
       pred_prob <- data.frame()
+      best_thesholds <- data.frame()
 
     #Scoring
 
@@ -79,51 +80,100 @@ ml_test_all <- function(bank,
 
           #Predict probabilities
           if(test_model[[i]]$method_name == "ranger"){
+
+            #First, get predictions
             preds <- predict(test_model[[i]]$model_obj$finalModel,
                              as.matrix(scores[,test_model[[i]]$rhs]))$predictions[,2]
+
+
+            #Second, get what would be best
+            best_thesholds <- rbind(best_thesholds,
+                                    data.frame(method = names(test_model)[i],
+                                               test_model[[i]]$thresh %>%
+                                                 filter(pvalue == -9999)  %>%
+                                                 mutate(pvalue = "best")))
+
           }
 
           #XG spits out probability of NUR, subtract it from one to get UR
           if(test_model[[i]]$method_name == "xgbTree"){
-            preds <- 1 - predict(test_model[[i]]$model_obj$finalModel,
-                             as.matrix(scores[, test_model[[i]]$rhs]))
+
+            #First, get predictions
+              preds <- 1 - predict(test_model[[i]]$model_obj$finalModel,
+                               as.matrix(scores[, test_model[[i]]$rhs]))
+
+
+            #Second, get what would be best
+              best_thesholds <- rbind(best_thesholds,
+                                      data.frame(method = names(test_model)[i],
+                                                 test_model[[i]]$thresh %>%
+                                                   filter(pvalue == -9999)  %>%
+                                                   mutate(pvalue = "best")))
+
           }
+
 
         } else {
           preds <- scores[,test_model[[i]]$method_name]
         }
 
         #Calculate threshold
-          if(costratio <= max(test_model[[i]]$thresh$costratio) &
-             costratio >= min(test_model[[i]]$thresh$costratio) ){
+          if(pvalue <= max(test_model[[i]]$thresh$pvalue) &
+             pvalue >= min(test_model[[i]]$thresh$pvalue) ){
 
             temp <- test_model[[i]]$thresh
 
-              if(0 %in% (temp$costratio - costratio)){
-                reason <- "Using exact cost threshold"
+              if(0 %in% (temp$pvalue - pvalue)){
+                reason <- "Using exact p-value threshold"
                 if(fanfare){message(reason)}
-                res <- temp[temp$costratio == costratio,]
+
+                #get exact match
+                res <- temp[temp$pvalue == pvalue,]
                 thresh <- res$threshold[1]
-                costratio.returned <- res$costratio[1]
+                pvalue_returned <- res$pvalue[1]
+
+                #Save thresholds
+                  #First, get what was requested
+                    best_thesholds <- rbind(best_thesholds,
+                                        data.frame(method = names(test_model)[i],
+                                                   res[1,]  %>%
+                                                     mutate(pvalue = as.character(pvalue_returned))))
+
 
 
               } else {
-                reason <- "Using closest cost threshold"
+                reason <- "Using closest p-value threshold"
                 if(fanfare){message(reason)}
-                res <- temp[which(abs(temp$costratio - costratio)==min(abs(temp$costratio - costratio))),]
+
+                res <- temp[which(abs(temp$pvalue - pvalue) == min(abs(temp$pvalue - pvalue))),]
                 thresh <- res$threshold[1]
-                costratio.returned <- res$costratio[1]
+                pvalue_returned <- res$pvalue[1]
+
+                #Save thresholds
+                  #First, get what was requested
+                  best_thesholds <- rbind(best_thesholds,
+                                          data.frame(method = names(test_model)[i],
+                                                     res[1,]  %>%
+                                                       mutate(pvalue = as.character(pvalue_returned))))
+
+
               }
 
           } else if(length(test_model[[i]]$roc_obj) > 0) {
-            reason <- "Cost ratio is out of pre-calibrated range.
+            reason <- "P-value is out of pre-calibrated range.
             Using available ROC object to calculate custom threshold."
             if(fanfare){message(reason)}
 
-              res <- threshold_calc(test_model[[i]]$roc_obj, costratio)
+            #Get metrics
+              res <- threshold_calc(test_model[[i]]$roc_obj, pvalue)
               thresh <- res$threshold
+              pvalue_returned <- pvalue
 
-              costratio.returned <- costratio
+            #Store results
+              best_thesholds <- rbind(best_thesholds,
+                                      data.frame(method = names(test_model)[i],
+                                                 res[1,] %>%
+                                                   mutate(pvalue = as.character(pvalue_returned))))
 
 
             } else {
@@ -134,18 +184,26 @@ ml_test_all <- function(bank,
               temp <- test_model[[i]]$thresh
 
               #Find closest match
-              res <- temp[which(abs(temp$costratio - costratio) ==min(abs(temp$costratio - costratio))),]
+              res <- temp[which(abs(temp$pvalue - pvalue) == min(abs(temp$pvalue - pvalue))),]
               thresh <- res$threshold[1]
-              costratio.returned <- res$costratio[1]
+              pvalue_returned <- res$pvalue[1]
+
+              #Save out closest threshold
+              best_thesholds <- rbind(best_thesholds,
+                                      data.frame(method = names(test_model)[i],
+                                                 res[1,]  %>%
+                                                   mutate(pvalue = as.character(pvalue_returned))))
+
+
 
           }
 
         #Verdict
           verdict_temp <- data.frame(series_no = 1:length(bank),
                                      method = test_model[[i]]$method,
-                                     costratio.requested = costratio,
-                                     costratio.returned = costratio.returned,
-                                     type.of.result = reason,
+                                     pvalue_requested = pvalue,
+                                     pvalue_returned = pvalue_returned,
+                                     type_of_result = reason,
                                      score = preds,
                                      threshold = thresh,
                                      verdict = ifelse(preds >= thresh, "unit root", "stationary"))
@@ -177,13 +235,13 @@ ml_test_all <- function(bank,
                               "pgff_stat", "breit_stat", "ers_stat_d",
                               "ers_stat_p", "urza_stat","ursp_stat")
         pred_prob_verd <- pred_prob[!pred_prob$method %in% to_be_suppressed,
-                                    c("series_no", "costratio.requested",
-                                      "costratio.returned", "type.of.result",
+                                    c("series_no", "pvalue_requested",
+                                      "pvalue_returned", "type_of_result",
                                       "method", "verdict")]
       } else if(verdicts == 2){
         #Show all results
-        pred_prob_verd <- pred_prob[, c("series_no", "costratio.requested",
-                                        "costratio.returned", "type.of.result",
+        pred_prob_verd <- pred_prob[, c("series_no", "pvalue_requested",
+                                        "pvalue_returned", "type_of_result",
                                         "method", "verdict")]
       }
 
@@ -191,19 +249,21 @@ ml_test_all <- function(bank,
 
       #Verdicts
       verdicts <- reshape(pred_prob_verd,
-                          idvar = c("series_no", "costratio.requested",
-                                    "costratio.returned", "type.of.result"),
+                          idvar = c("series_no", "pvalue_requested",
+                                    "pvalue_returned", "type_of_result"),
                           timevar = "method",
                           direction = "wide")
+      colnames(verdicts) <- gsub("\\.", "_", colnames(verdicts))
 
       #Underlying detail
-      pred_prob <- reshape(pred_prob[, c("series_no", "costratio.requested",
-                                         "costratio.returned", "method",
-                                         "type.of.result","score", "threshold")],
-                           idvar = c("series_no", "costratio.requested",
-                                     "costratio.returned",  "type.of.result"),
+      pred_prob <- reshape(pred_prob[, c("series_no", "pvalue_requested",
+                                         "pvalue_returned", "method",
+                                         "type_of_result","score", "threshold")],
+                           idvar = c("series_no", "pvalue_requested",
+                                     "pvalue_returned",  "type_of_result"),
                            timevar = "method",
                            direction = "wide")
+      colnames(pred_prob) <- gsub("\\.", "_", colnames(pred_prob))
 
       #Extract series names if they exist and overwrite
       if(!is.null(names(bank))){
@@ -224,11 +284,14 @@ ml_test_all <- function(bank,
       if(fanfare){
         message(paste("Series ",
                       verdicts$series_no, ": ",
-                      verdicts$verdict.xgbTree))
+                      verdicts$verdict_xgbTree))
       }
+
+
 
   #Return results
   return(list(verdicts = verdicts,
+              threshold = best_thesholds,
               results = pred_prob,
               features = scores))
 }

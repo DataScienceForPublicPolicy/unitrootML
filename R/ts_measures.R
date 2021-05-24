@@ -1,11 +1,13 @@
 #' Calculate time series characteristics
 #'
-#' Test for seasonality in a time series based on lags
+#' Test for seasonality in a time series based on lags.
 #' @param x A time series object
 #' @return A vector of time series characteristics
 #' @references https://robjhyndman.com/hyndsight/tscharacteristics/
 #' @author Rob Hyndman
-#' @examples ts_measures(ts(rnorm(120, 10,10), freq=12))
+#' @examples
+#' ts_measures(ts(rnorm(120, 10,10),
+#'                freq=12))
 #' @export
 #'
 

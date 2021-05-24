@@ -20,7 +20,10 @@ A data frame
 Returns a vector of time series values
 }
 \examples{
-dgp_enders3(periods = 200, sd = 1, gamma = 1)
+
+dgp_enders3(periods = 200,
+            sd = 1,
+           gamma = 1)
 }
 \references{
 Enders, Walter. 2008 Applied econometric time series. New York: Wiley.

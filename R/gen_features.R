@@ -8,7 +8,17 @@
 #' @param run_par Boolean indicating whether to compute in parallel.
 #' @return A data frame
 #' @author Gary Cornwall and Jeffrey Chen
-#' @examples gen_features(bank)
+#' @examples
+#' #Create simulated time series using Enders 1
+#' new_series <- gen_bank(iter = 300,
+#'                        dgp_params = list(dgp = "dgp_enders1",
+#'                                          periods = 100,
+#'                                          sd = 1,
+#'                                          alpha0 = 1,
+#'                                          alpha2 =  .005,
+#'                                          gamma = 1))
+#' #Generate features
+#' feat <- gen_features(bank = new_series)
 #' @export
 #'
 #'

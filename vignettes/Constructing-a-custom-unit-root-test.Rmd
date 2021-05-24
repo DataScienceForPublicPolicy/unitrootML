@@ -41,7 +41,7 @@ Define
                      list(dgp = "dgp_enders1",  sd = 1, alpha0 = 1, alpha2 =  .005, gamma = 1))
 ```
 
-Generate time series
+Generate
 
 ```{r}
 #Simulate train and test time series
@@ -97,14 +97,18 @@ Apply custom ML Test to new time series object
 ```{r}
 #List of time series 
   x <- list(norm1 = ts(rnorm(120, 10,10), freq=12),
-            with_trend = ts(rnorm(120, 10,10) + 1:120, freq=12))
+            with_trend = ts(rnorm(120, 10,10) + 1:120, freq=12),
+            uroot = ts(cumsum(rnorm(120,10,10)), freq = 12))
             
 #ML test
-  out <- ml_test_all(bank = x, 
-                     costratio = 5,
+  out <- ml_test(bank = x, 
+                     pvalue = 0.05,
                      original = FALSE,
-                     custom_model = custom_set) 
+                     custom_model = custom_set)
    
 ```
+
+
+
 
 For more in-depth background on the construction and properties of the ML-based unit root test, read Cornwall, Chen, and Sauley (2021).

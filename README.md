@@ -38,12 +38,14 @@ To illustrate the test in practice, we will need some test data. We simulate fiv
                             autoplot(out[[5]]), ncol = 2)
 ```
 
-To screen these time series, apply the `ml_test_all` function using an efficient pre-trained gradient boosting algorithm. The function expects a list object containing time series objects (`bank =`) and a `costratio` to identify the optimal decision threshold given the preferred weight between Type I and II errors.   In this case, we assume a `costratio = 0.2`.
+To screen these time series, apply the `ml_test` function using an efficient pre-trained gradient boosting algorithm. The function expects a list object containing time series objects (`bank =`) and a `pvalue` to identify the optimal decision threshold.   In this case, we assume a `pvalue = 0.05` and `testing_summary` to print a summary for the testing results.
 
 
 ```
-  res <- ml_test_all(bank = out,  
-  			      costratio = 0.2)
+  res <- ml_test(bank = out,  
+  			 pvalue = 0.05)
+			 
+  testing_summary(res)
 ```
 
 The `res` object captures the outputs of a battery of tests, including pre-trained ML-based unit root tests. The first element summarizes the verdict that each unit root test reached when evaluating each time series (e.g. unit root versus stationary). While each of the traditional tests may disagree, it is worth noting that the tests built on Random Forest (`verdict.ranger`) and Gradient Boosting (`verdict.xgbTree`) offer markedly improved diagnostic accuracy.
@@ -69,13 +71,13 @@ Lastly, all the input features for the ML-based tests that were calculated from 
 
 ## Custom tests
 
-It is possible to also create and use your own custom ML tests (see included vignettes). We have made available a [ testing package (1gb)](https://www.dropbox.com/s/eu3tjmasdd6zln6/sysdata_full.Rda?dl=0) that include both a gradient boost-based test and random forest-based test. Note that in Cornwall, Chen, and Sauley (2021), these two different ensemble-based tests yield nearly identical performance.
+It is possible to also create and use your own custom ML tests (see included vignettes). We have made available a [ testing package (1gb)](https://www.dropbox.com/s/lfz39qwi1aajuxj/sysdata_full.Rda?dl=0) that include both a gradient boost-based test and random forest-based test. Note that in Cornwall, Chen, and Sauley (2021), these two different ensemble-based tests yield nearly identical performance.
 
 ```
-  res <- ml_test_all(bank = out,  
+  res <- ml_test(bank = out,  
   			     original = FALSE,	
 			     custom_model = base_models, 
-			     costratio = 0.2)
+			     pvalue = 0.05)
 ```
 
 
