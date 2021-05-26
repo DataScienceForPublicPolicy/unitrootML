@@ -33,9 +33,12 @@ For this example, we will simulate five time series: two with a unit root (`gamm
                 series5 = ts(dgp_enders1(gamma = 0.5), freq = 12, start = c(2010,1)))
 
   #Plot
-    gridExtra::grid.arrange(autoplot(out[[1]]), autoplot(out[[2]]), 
-                            autoplot(out[[3]]), autoplot(out[[4]]), 
-                            autoplot(out[[5]]), ncol = 2)
+    gridExtra::grid.arrange(autoplot(out[[1]]), 
+                            autoplot(out[[2]]), 
+                            autoplot(out[[3]]), 
+                            autoplot(out[[4]]), 
+                            autoplot(out[[5]]), 
+                            ncol = 2)
 ```
 
 To screen these time series, apply the `ml_test_all` function, which expects a list object containing time series objects (`bank =`) and a`pvalue = 0.05` to return results evaluated at a 5% level.
@@ -49,14 +52,14 @@ The `res` object captures the outputs of a battery of tests, including pre-train
 
 ```{r}
   verdicts <- res$verdicts
-  print(verdicts[,1:4])
+  print(verdicts[,1:5])
 ```
 
 The test statistics and their critical thresholds are recorded in the `results` element.
 
 ```{r}
   results <- res$results
-  print(results[,1:4])
+  print(results[,1:5])
 ```
 
 Lastly, all the input features for the ML-based tests that were calculated from the time series list are available in the `features` element. 
