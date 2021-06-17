@@ -1,4 +1,4 @@
-# Machine Learning-Based Hypothesis Testing for Time Series  (hypML)
+# Machine Learning-Based Hypothesis Testing for Time Series  (unitrootML)
 
 Recent data science for economics research has found that machine learning can vastly improve upon the current state of hypothesis testing, especially for identifying qualities of time series. This `R` package implements a number of ML-based tests that offer dramatic gains in accuracy, namely for detecting unit roots (subsequent versions for Stata and Python will be developed in due course).  This package is built to test three core unit root DGPs using the ML algorithm from [Cornwall, Chen, and Sauley (2021)](https://arxiv.org/abs/2103.01368):
 
@@ -15,8 +15,8 @@ In addition, the `R` package also has the capability of training custom ML-based
 
 Install this package from this Github repository, then load it up!
 ```
-devtools::install_github("DataScienceforPublicPolicy/hypML") 
-library(hypML)
+devtools::install_github("DataScienceforPublicPolicy/unitrootML") 
+library(unitrootML)
 ```
 
 ## Applying an ML-based unit root test 
