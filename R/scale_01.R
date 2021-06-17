@@ -8,14 +8,17 @@
 #' @references https://robjhyndman.com/hyndsight/tscharacteristics/
 #' @author Rob Hyndman
 #' @examples
-#' scale_01(ts(rnorm(120, 10,10),
-#'            frequency=12))
+#' scale_01(ts(rnorm(120, 10, 10), frequency=12),
+#'          a = 7.53,
+#'          b = 0.103)
 #' @export
 #'
 
 
-scale_01 <- function(x,a,b){
-  eax <- exp(a*x)
+scale_01 <- function(x,
+                     a = 7.53,
+                     b = 0.103){
+  eax <- exp(a * x)
   ea <- exp(a)
   return((eax-1)/(eax+b) * (ea+b)/(ea-1))
 }

@@ -70,7 +70,7 @@ gen_test <- function(train_set,
 
   #Set object type
     hypmod <- list()
-    class(hypmod) <- "hypML-models"
+    class(hypmod) <- "unitrootML-models"
 
   #Check number of models
     if(sum(names(model_params) %in% "method") == 1){
@@ -100,9 +100,9 @@ gen_test <- function(train_set,
       mod <- caret::train(ur_flag ~ .,
                    data = train_set[,-c(1:3)],
                    method = model_params[[iter]]$method,
-                   trControl = trainControl(method = use_case,
-                                            number = model_params[[iter]]$cv_folds,
-                                            classProbs = TRUE),
+                   trControl = caret::trainControl(method = use_case,
+                                                   number = model_params[[iter]]$cv_folds,
+                                                   classProbs = TRUE),
                    tuneGrid = model_params[[iter]]$tune_grid)
 
       #Obtain test performance by pulling prediction for chance of UR

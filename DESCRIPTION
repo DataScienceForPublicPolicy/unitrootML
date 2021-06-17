@@ -1,5 +1,5 @@
-Package: hypML
-Title: HypML - Machine Learning-Based Hypothesis Testing for Time Series 
+Package: unitrootML
+Title: unitrootML - Machine Learning-Based Hypothesis Testing for Time Series 
 Version: 0.2.1
 Authors@R: 
  as.person(c(
@@ -13,6 +13,9 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends:
+    R (>= 2.15)
+Imports:
+	magrittr,
 	tseries,
 	fUnitRoots,
 	egcm,

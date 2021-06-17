@@ -26,7 +26,9 @@
 
 gen_features <- function(bank, cval = 0.05, run_par = TRUE) {
 
-  require(foreach)
+  #Set connectors
+    `%dopar%` <- foreach::`%dopar%`
+    `%>%` <- magrittr::`%>%`
 
   #Set up cluster
   if(run_par){
@@ -55,14 +57,13 @@ gen_features <- function(bank, cval = 0.05, run_par = TRUE) {
   }
 
   #Final touches
-  data <- do.call(plyr::rbind.fill, data)
-  data$ur_flag <- as.factor(data$ur_flag)
-  for(j in ncol(data):50){
-    if(mean(is.na(data[,j])) == 1){
-      data[,j] <- NULL
+    data <- do.call(plyr::rbind.fill, data)
+    data$ur_flag <- as.factor(data$ur_flag)
+    for(j in ncol(data):50){
+      if(mean(is.na(data[,j])) == 1){
+        data[,j] <- NULL
+      }
     }
-
-  }
 
   #Keep only non-duplicated columns
     #Check for duplicates
@@ -71,6 +72,7 @@ gen_features <- function(bank, cval = 0.05, run_par = TRUE) {
       for(j in ncol(data):1){
 
         check <- length(which(data[,i] == data[,j]))
+
         master <- rbind(master,
                         data.frame(i = i, j = j,
                                    check_out = check == nrow(data)))
@@ -78,7 +80,9 @@ gen_features <- function(bank, cval = 0.05, run_par = TRUE) {
     }
 
     #Keep dupe indexes
+
     master <- master[master$i!= master$j & master$check_out == TRUE,]
+
     data <- data[,-master$j[1:(nrow(master)/2)]]
 
   #Return result

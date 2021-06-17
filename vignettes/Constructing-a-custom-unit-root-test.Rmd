@@ -5,27 +5,26 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Testing for a unit root with hypML}
+  %\VignetteIndexEntry{Testing for a unit root with unitrootML}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-In this vignette, we illustrate how to apply the pre-trained hypML unit root test to a set of time series.
+In this vignette, we illustrate how to apply the pre-trained unitrootML unit root test to a set of time series.
 
 ## Set up
 
 Set up requires installation from the Github page
 ```{r, message=FALSE, warning=FALSE}
 #Load package
-  #devtools::
-  library(hypML)
+  library(unitrootML)
 ```
 
 
 
 ```{r}
 #Set splits
-  N <- 3000 
+  N <- 500 
   splits <- c(0.5,0.3, 0.2)
   train_index <- 1:round(N*splits[1])
   val_index <- (round(N*splits[1])+1):round(N * sum(splits[1:2]))
@@ -87,8 +86,8 @@ Train models for test
   
 #Train model
   custom_set <- gen_test(train_set = train_feat, 
-                        val_set = val_feat,
-                        model_params = model_params)
+                         val_set = val_feat,
+                         model_params = model_params)
   
   save(custom_set, file = "custom_set.Rda")
 ```
@@ -102,9 +101,9 @@ Apply custom ML Test to new time series object
             
 #ML test
   out <- ml_test(bank = x, 
-                     pvalue = 0.05,
-                     original = FALSE,
-                     custom_model = custom_set)
+                 pvalue = 0.05,
+                 original = FALSE,
+                 custom_model = custom_set)
    
 ```
 

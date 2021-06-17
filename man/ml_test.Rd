@@ -20,7 +20,7 @@ ml_test(
 
 \item{pvalue}{A numeric value indicating the desired p-value. (Default = 0.05) To retrieve the best accuracy, enter "-9999".}
 
-\item{custom_model}{A hypML model object with a custom-trained model. Note that a custom model is used only when original is set to TRUE and a hypML model object is supplied. (Default = NULL)}
+\item{custom_model}{A unitrootML model object with a custom-trained model. Note that a custom model is used only when original is set to TRUE and a unitrootML model object is supplied. (Default = NULL)}
 
 \item{original}{Boolean indicating whether to use default model or a custom model. The default model is a gradient boost model with a sensitivity rated at 0.924 and specificity rated at 0.952. (Default = TRUE)}
 
@@ -33,7 +33,7 @@ ml_test(
 \item{fanfare}{Boolean indicating whether to print results (Default = FALSE).}
 }
 \value{
-A HypML object containing test results
+A unitrootML object containing test results
 }
 \description{
 Apply ML-based hypothesis test to a bank of time series

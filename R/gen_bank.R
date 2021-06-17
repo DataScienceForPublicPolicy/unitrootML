@@ -33,7 +33,10 @@ gen_bank <- function(iter = 500000,
                      dgp_params = list(dgp = "dgp_enders1", periods = 100, sd = 1,
                                        alpha0 = 1, alpha2 =  .005, gamma = 1)) {
 
-  require(foreach)
+  #Set connectors
+    `%dopar%` <- foreach::`%dopar%`
+    `%>%` <- magrittr::`%>%`
+
   #Extract DGPs
     if("dgp" %in% names(dgp_params) ){
       dgp_frame <- dgp_params$dgp
@@ -99,25 +102,25 @@ gen_bank <- function(iter = 500000,
 
             #Enders 1
             temp_series <- dgp_enders1(periods = (freq * len),
-                                    sd = params[dgp_index,"sd"],
-                                    alpha0 = params[dgp_index,"alpha0"],
-                                    alpha2 = params[dgp_index,"alpha2"],
-                                    gamma = gamma)
+                                      sd = params[dgp_index,"sd"],
+                                      alpha0 = params[dgp_index,"alpha0"],
+                                      alpha2 = params[dgp_index,"alpha2"],
+                                      gamma = gamma)
 
           } else if(dgp_select == "dgp_enders2"){
 
             #Enders 2
             temp_series <- dgp_enders2(periods = (freq * len),
-                                    sd = params[dgp_index,"sd"],
-                                    alpha0 = params[dgp_index,"alpha0"],
-                                    gamma = gamma)
+                                      sd = params[dgp_index,"sd"],
+                                      alpha0 = params[dgp_index,"alpha0"],
+                                      gamma = gamma)
 
           }else if(dgp_select == "dgp_enders3"){
 
             #Enders 3
             temp_series <- dgp_enders3(periods = (freq * len),
-                                    sd = params[dgp_index,"sd"],
-                                    gamma = gamma)
+                                      sd = params[dgp_index,"sd"],
+                                      gamma = gamma)
 
           }else if(dgp_select == "dgp_engle"){
 
@@ -126,8 +129,8 @@ gen_bank <- function(iter = 500000,
                                       sd = params[dgp_index,"sd"],
                                       gamma = gamma,
                                       theta = params[dgp_index,"theta"],
-                                     alpha0 = params[dgp_index,"alpha0"],
-                                     alpha1 = params[dgp_index,"alpha1"])
+                                      alpha0 = params[dgp_index,"alpha0"],
+                                      alpha1 = params[dgp_index,"alpha1"])
           }
 
       #Construct payload

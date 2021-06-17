@@ -5,20 +5,21 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Testing for a unit root with hypML}
+  %\VignetteIndexEntry{Testing for a unit root with unitrootML}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-In this vignette, we illustrate how to apply the pre-trained hypML unit root test to a set of time series.
+In this vignette, we illustrate how to apply the pre-trained unitrootML unit root test to a set of time series.
 
 ## Set up
 
 Set up requires installation from the Github page
 ```{r, message=FALSE, warning=FALSE}
 #Load package
-  #devtools::
-  library(hypML)
+  library(unitrootML)
+  library(forecast)
+  library(ggplot2)
 ```
 
 For this example, we will simulate five time series: two with a unit root (`gamma = 1`) and three without a unit root (`gamma < 1`). These time series are stored in a list object. Let's take a look at a few of these time series using `autoplot` from the forecast package and arranged into a grid using `grid.arrange`.

@@ -112,11 +112,11 @@
 
       # Serial
       Q <- Box.test(adj.x,lag=10)[["statistic"]]/(N*10)
-      fQ <- scale_01(Q,7.53,0.103)
+      fQ <- scale_01(Q, 7.53, 0.103)
 
       # Nonlinearity
       p <- tseries::terasvirta.test(na.contiguous(adj.x))[["statistic"]]
-      fp <- scale_inf(p,0.069,2.304)
+      fp <- scale_inf(p, 0.069, 2.304)
 
       # Skewness
       sk <- abs(mean((tadj.x/max(tadj.x/2, na.rm = T) - xbar/max(tadj.x/2, na.rm = T))^3,
